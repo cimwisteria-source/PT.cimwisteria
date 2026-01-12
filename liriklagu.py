@@ -19,18 +19,7 @@ def sing_lyric(lyric, delay, speed):
  
 def sing_song():
     lyrics = [ 
-        ("marah marah mulu  .navigasi > li {
-    list-style-type: none;
-    padding: 10px;
-    font-size: 20px;
-     }
-  .navigasi > li>a:hover{
-    color: red;
-    transition: all .5 ease-in-out;
- }
- .navigasi > li > a {
-   text-decoration: none;
-   color: white;", 0.10),
+        ("marah marah mulu", 0.10),
         ("buang buang waktu", 0.10),
         ("mending nyanyi sama aku", 0.08),
         ("heeeeaaaaaahhhhh....", 0.17),

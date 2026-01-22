@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cim ngide²emng</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="container">
+        <form id="loginForm" class="glass-form">
+            <h2>Selamat Datang di PT.cimwisteria</h2>
+            <p>masukan data anda dahulu</p>
+            
+            <div class="input-group">
+                <input type="text" id="username" required>
+                <label>Username</label>
+                <i class="fas fa-user"></i>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password" required>
+                <label>Password</label>
+                <i class="fas fa-lock"></i>
+            </div>
+
+            <button type="submit" id="btnSubmit">
+                <span>Masuk</span>
+                <div class="liquid"></div>
+            </button>
+
+            <div class="footer-links">
+                <a href="#">Lupa Password?</a>
+                <a href="#">Daftar Baru</a>
+            </div>
+        </form>
+    </div>
+    <script src="script.js"></script>
+    <style>* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    background: #0f0c29;
+}
+
+/* Animasi Background Bergerak */
+.background-animation {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    z-index: -1;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Glassmorphism Effect */
+.glass-form {
+    position: relative;
+    padding: 40px;
+    width: 380px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 25px 45px rgba(0,0,0,0.2);
+    text-align: center;
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.glass-form:hover {
+    transform: translateY(-5px);
+}
+
+h2 { margin-bottom: 10px; letter-spacing: 2px; }
+p { font-size: 0.9rem; margin-bottom: 30px; opacity: 0.8; }
+
+/* Input Styling */
+.input-group {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px 10px 10px 5px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #fff;
+    outline: none;
+    color: #fff;
+    font-size: 1rem;
+    transition: 0.5s;
+}
+
+.input-group label {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    pointer-events: none;
+    transition: 0.5s;
+    opacity: 0.7;
+}
+
+.input-group input:focus ~ label,
+.input-group input:valid ~ label {
+    top: -20px;
+    font-size: 0.8rem;
+    color: #23d5ab;
+    opacity: 1;
+}
+
+/* Button Interaktif */
+button {
+    position: relative;
+    padding: 15px 35px;
+    background: #fff;
+    color: #000;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+button:hover {
+    letter-spacing: 2px;
+    background: #23d5ab;
+    color: white;
+    box-shadow: 0 0 20px #23d5ab;
+}
+
+.footer-links {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer-links a {
+    color: white;
+    font-size: 0.8rem;
+    text-decoration: none;
+    opacity: 0.7;
+}
+
+.footer-links a:hover { opacity: 1; text-decoration: underline; }
+</style>
+     <script>document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('btnSubmit');
+    const username = document.getElementById('username').value;
+
+    // Efek loading sederhana
+    btn.innerHTML = "Memproses...";
+    btn.style.opacity = "0.7";
+
+    setTimeout(() => {
+        alert(`Halo ${username}! Kamu berhasil masuk ke sistem.`);
+        btn.innerHTML = "Masuk";
+        btn.style.opacity = "1";
+    }, 1500);
+});
+
+// Efek interaktif tambahan: Form bergoyang sedikit saat mouse bergerak
+const card = document.querySelector('.glass-form');
+document.addEventListener('mousemove', (e) => {
+    let xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+    let yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+    card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+});
+</script>
+</body>
+</html>

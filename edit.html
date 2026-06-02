@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Barang</title>
+    <style>
+        /* --- RESET & BASE STYLE --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc; /* Abu-abu ultra terang yang elegan */
+            color: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        /* --- CONTAINER UTAMA --- */
+        .wrapper {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* --- CARD FORM & TABEL --- */
+        .panel {
+            background: #ffffff;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f1f5f9;
+            margin-bottom: 24px;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- LAYOUT FORM --- */
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Responsif untuk HP */
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        /* --- INPUT FIELDS --- */
+        .field-group input {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: #1e293b;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .field-group input::placeholder {
+            color: #94a3b8;
+        }
+
+        .field-group input:focus {
+            outline: none;
+            border-color: #10b981; /* Hijau Emerald Estetik */
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        /* --- BUTTONS --- */
+        .btn-primary {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            height: 41px; /* Menyamakan tinggi dengan input field */
+            align-self: flex-end; /* Memastikan sejajar di bawah label */
+        }
+
+        .btn-primary:hover {
+            background-color: #059669;
+        }
+
+        .btn-danger {
+            background-color: transparent;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #fef2f2;
+            border-color: #f87171;
+        }
+
+        /* --- TABEL DATA --- */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 12px 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 16px;
+            font-size: 14px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        /* State ketika tabel kosong */
+        .empty-row td {
+            text-align: center;
+            color: #94a3b8;
+            font-style: italic;
+            padding: 32px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="panel">
+            <h2 class="panel-title">Tambah Data Barang</h2>
+            <form id="formBarang">
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="namaBarang">Nama Barang</label>
+                        <input type="text" id="namaBarang" placeholder="cth: Keyboard Mechanical" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="hargaBarang">Harga Satuan</label>
+                        <input type="number" id="hargaBarang" placeholder="Rp" min="0" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="stokBarang">Stok</label>
+                        <input type="number" id="stokBarang" placeholder="0" min="0" required>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end;">
+                    <button type="submit" class="btn-primary">Tambah Barang</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2 class="panel-title">Daftar Inventaris</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Barang</th>
+                            <th>Harga</th>
+                            <th>Stok</th>
+                            <th style="text-align: center; width: 100px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelBarang">
+                        <tr class="empty-row" id="barisKosong">
+                            <td colspan="4">Belum ada data barang yang dimasukkan.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('formBarang');
+        const tabel = document.getElementById('tabelBarang');
+        const barisKosong = document.getElementById('barisKosong');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Ambil Value dari Input
+            const nama = document.getElementById('namaBarang').value;
+            const harga = parseInt(document.getElementById('hargaBarang').value).toLocaleString('id-ID');
+            const stok = document.getElementById('stokBarang').value;
+
+            // Hapus placeholder kosong jika ada
+            if (document.getElementById('barisKosong')) {
+                document.getElementById('barisKosong').remove();
+            }
+
+            // Membuat element baris baru
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td style="font-weight: 500; color: #1e293b;">${nama}</td>
+                <td>Rp ${harga}</td>
+                <td><span style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-size: 13px; font-weight: 500;">${stok} unit</span></td>
+                <td style="text-align: center;">
+                    <button class="btn-danger" onclick="hapusBarang(this)">Hapus</button>
+                </td>
+            `;
+
+            tabel.appendChild(row);
+            form.reset(); // Mengosongkan form kembali
+        });
+
+        function hapusBarang(button) {
+            // Hapus baris tempat tombol diklik
+            const row = button.closest('tr');
+            row.remove();
+
+            // Jika tidak ada data lagi, tampilkan text kosong kembali
+            if (tabel.rows.length === 0) {
+                tabel.innerHTML = `
+                    <tr class="empty-row" id="barisKosong">
+                        <td colspan="4">Belum ada data barang yang dimasukkan.</td>
+                    </tr>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
+

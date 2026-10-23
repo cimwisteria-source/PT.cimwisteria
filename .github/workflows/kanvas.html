@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kanvas cim</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    /* Toolbar Styling */
+    .toolbar {
+      background: #ffffff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      width: 100%;
+    }
+
+    .tool-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    /* Palette Options */
+    .palette {
+      display: flex;
+      gap: 6px;
+    }
+
+    .color-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid #ddd;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .color-btn:hover, .color-btn.active {
+      transform: scale(1.2);
+      border-color: #333;
+    }
+
+    #colorPicker {
+      border: none;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      background: none;
+    }
+
+    /* Size Slider */
+    #brushSize {
+      cursor: pointer;
+      width: 100px;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      background-color: #4a90e2;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: #357abd;
+    }
+
+    .btn-secondary {
+      background-color: #e0e0e0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background-color: #d0d0d0;
+    }
+
+    .btn-danger {
+      background-color: #e74c3c;
+    }
+
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+
+    .btn.active {
+      outline: 2px solid #333;
+    }
+
+    /* Canvas Area */
+    .canvas-container {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      background-color: #ffffff;
+      cursor: crosshair;
+      touch-action: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>serah aing mau gambar apa</h2>
+
+  <div class="container">
+    <!-- Panel Alat & Palet -->
+    <div class="toolbar">
+      <!-- Palet Warna -->
+      <div class="tool-group">
+        <label>Warna:</label>
+        <div class="palette">
+          <button class="color-btn active" style="background-color: #000000;" data-color="#000000"></button>
+          <button class="color-btn" style="background-color: #e74c3c;" data-color="#e74c3c"></button>
+          <button class="color-btn" style="background-color: #e67e22;" data-color="#e67e22"></button>
+          <button class="color-btn" style="background-color: #f1c40f;" data-color="#f1c40f"></button>
+          <button class="color-btn" style="background-color: #2ecc71;" data-color="#2ecc71"></button>
+          <button class="color-btn" style="background-color: #3498db;" data-color="#3498db"></button>
+          <button class="color-btn" style="background-color: #9b59b6;" data-color="#9b59b6"></button>
+        </div>
+        <input type="color" id="colorPicker" value="#000000">
+      </div>
+
+      <!-- Ukuran Kuas -->
+      <div class="tool-group">
+        <label for="brushSize">Kuas:</label>
+        <input type="range" id="brushSize" min="1" max="50" value="5">
+        <span id="sizeValue">5px</span>
+      </div>
+
+      <!-- Alat Tambahan -->
+      <div class="tool-group">
+        <button id="eraserBtn" class="btn btn-secondary">Penghapus</button>
+        <button id="clearBtn" class="btn btn-danger">Bersihkan</button>
+        <button id="saveBtn" class="btn">Unduh Gambar</button>
+      </div>
+    </div>
+
+    <!-- Area Kanvas -->
+    <div class="canvas-container">
+      <canvas id="paintCanvas" width="800" height="500"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('paintCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const colorPicker = document.getElementById('colorPicker');
+    const colorBtns = document.querySelectorAll('.color-btn');
+    const brushSize = document.getElementById('brushSize');
+    const sizeValue = document.getElementById('sizeValue');
+    const eraserBtn = document.getElementById('eraserBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const saveBtn = document.getElementById('saveBtn');
+
+    // State Aplikasi
+    let isDrawing = false;
+    let currentColor = '#000000';
+    let currentSize = 5;
+    let isEraser = false;
+
+    // Inisialisasi Latar Belakang Putih Kanvas
+    function initCanvas() {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    initCanvas();
+
+    // Mengambil Koordinat Mouse/Touch
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    // Memulai Gambar
+    function startDrawing(e) {
+      isDrawing = true;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      draw(e);
+    }
+
+    // Proses Menggambar Path
+    function draw(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+
+      const pos = getPos(e);
+
+      ctx.lineWidth = currentSize;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      if (isEraser) {
+        ctx.strokeStyle = '#ffffff';
+      } else {
+        ctx.strokeStyle = currentColor;
+      }
+
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    // Berhenti Menggambar
+    function stopDrawing() {
+      if (isDrawing) {
+        ctx.closePath();
+        isDrawing = false;
+      }
+    }
+
+    // Event Listener untuk Mouse & Touch
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    canvas.addEventListener('touchstart', startDrawing);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchend', stopDrawing);
+
+    // Pengaturan Palet Warna Presets
+    colorBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        colorBtns.forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentColor = e.target.getAttribute('data-color');
+        colorPicker.value = currentColor;
+        disableEraser();
+      });
+    });
+
+    // Custom Color Picker
+    colorPicker.addEventListener('input', (e) => {
+      currentColor = e.target.value;
+      colorBtns.forEach(b => b.classList.remove('active'));
+      disableEraser();
+    });
+
+    // Slider Ukuran Kuas
+    brushSize.addEventListener('input', (e) => {
+      currentSize = e.target.value;
+      sizeValue.textContent = `${currentSize}px`;
+    });
+
+    // Toggle Penghapus
+    eraserBtn.addEventListener('click', () => {
+      isEraser = !isEraser;
+      if (isEraser) {
+        eraserBtn.classList.add('active');
+        eraserBtn.style.backgroundColor = '#7f8c8d';
+      } else {
+        disableEraser();
+      }
+    });
+
+    function disableEraser() {
+      isEraser = false;
+      eraserBtn.classList.remove('active');
+      eraserBtn.style.backgroundColor = '#e0e0e0';
+    }
+
+    // Bersihkan Kanvas
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Apakah Anda yakin ingin mengosongkan kanvas?')) {
+        initCanvas();
+      }
+    });
+
+    // Unduh Hasil Lukisan
+    saveBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'lukisan-saya.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
+</body>
+</html>

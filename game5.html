@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Arena Serang Menyerang</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-wrap">
+        <div class="stats">
+            <div id="p1-hp">HP Kamu: 100</div>
+            <div id="p2-hp">HP Musuh: 100</div>
+        </div>
+        <canvas id="arena"></canvas>
+        <div id="msg" class="hidden">
+            <h1 id="result"></h1>
+            <button onclick="location.reload()">Main Lagi</button>
+        </div>
+    </div>
+    <script src="script.js">
+      const canvas = document.getElementById('arena');
+const ctx = canvas.getContext('2d');
+
+canvas.width = 800;
+canvas.height = 400;
+
+let p1 = { x: 50, y: 175, w: 40, h: 40, hp: 100, color: '#00d4ff' };
+let p2 = { x: 710, y: 175, w: 40, h: 40, hp: 100, color: '#ff0055' };
+
+let bullets = [];
+let enemyBullets = [];
+let keys = {};
+let gameActive = true;
+
+window.onkeydown = e => keys[e.code] = true;
+window.onkeyup = e => keys[e.code] = false;
+
+// Fungsi Tembak
+function shoot(owner) {
+    if (owner === 'p1') {
+        bullets.push({ x: p1.x + 40, y: p1.y + 18, s: 8 });
+    } else {
+        enemyBullets.push({ x: p2.x - 10, y: p2.y + 18, s: -8 });
+    }
+}
+
+// Musuh menembak otomatis setiap 1 detik
+let enemyShootInterval = setInterval(() => {
+    if(gameActive) shoot('p2');
+}, 1000);
+
+function update() {
+    if (!gameActive) return;
+
+    // Gerakan Player (W & S)
+    if (keys['KeyW'] && p1.y > 0) p1.y -= 5;
+    if (keys['KeyS'] && p1.y < canvas.height - p1.h) p1.y += 5;
+    if (keys['Space']) {
+        if (bullets.length === 0 || bullets[bullets.length-1].x < p1.x + 150) shoot('p1');
+    }
+
+    // Gerakan AI Musuh (Mengikuti posisi Y player pelan-pelan)
+    if (p2.y + p2.h/2 < p1.y + p1.h/2) p2.y += 2;
+    else p2.y -= 2;
+
+    // Update Peluru Kita
+    bullets.forEach((b, i) => {
+        b.x += b.s;
+        if (b.x > canvas.width) bullets.splice(i, 1);
+        // Kena musuh?
+        if (b.x > p2.x && b.x < p2.x + p2.w && b.y > p2.y && b.y < p2.y + p2.h) {
+            p2.hp -= 5;
+            bullets.splice(i, 1);
+        }
+    });
+
+    // Update Peluru Musuh
+    enemyBullets.forEach((eb, i) => {
+        eb.x += eb.s;
+        if (eb.x < 0) enemyBullets.splice(i, 1);
+        // Kena kita?
+        if (eb.x < p1.x + p1.w && eb.x > p1.x && eb.y > p1.y && eb.y < p1.y + p1.h) {
+            p1.hp -= 10;
+            enemyBullets.splice(i, 1);
+        }
+    });
+
+    // Cek Menang/Kalah
+    document.getElementById('p1-hp').innerText = `HP Kamu: ${p1.hp}`;
+    document.getElementById('p2-hp').innerText = `HP Musuh: ${p2.hp}`;
+
+    if (p1.hp <= 0 || p2.hp <= 0) {
+        gameActive = false;
+        clearInterval(enemyShootInterval);
+        document.getElementById('msg').classList.remove('hidden');
+        document.getElementById('result').innerText = p1.hp <= 0 ? "KAMU KALAH!" : "KAMU MENANG!";
+    }
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Gambar Player
+    ctx.fillStyle = p1.color;
+    ctx.shadowBlur = 15; ctx.shadowColor = p1.color;
+    ctx.fillRect(p1.x, p1.y, p1.w, p1.h);
+
+    // Gambar Musuh
+    ctx.fillStyle = p2.color;
+    ctx.shadowColor = p2.color;
+    ctx.fillRect(p2.x, p2.y, p2.w, p2.h);
+
+    // Gambar Peluru
+    ctx.fillStyle = "white";
+    ctx.shadowBlur = 5;
+    bullets.forEach(b => ctx.fillRect(b.x, b.y, 10, 4));
+    enemyBullets.forEach(eb => ctx.fillRect(eb.x, eb.y, 10, 4));
+
+    if (gameActive) requestAnimationFrame(() => { update(); draw(); });
+}
+
+draw();
+
+    </script>
+    <style>
+      body {
+    margin: 0;
+    background: #050505;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.game-wrap { position: relative; text-align: center; }
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+#p1-hp { color: #00d4ff; text-shadow: 0 0 10px #00d4ff; }
+#p2-hp { color: #ff0055; text-shadow: 0 0 10px #ff0055; }
+
+canvas {
+    background: #111;
+    border: 3px solid #333;
+    box-shadow: 0 0 30px rgba(255,255,255,0.05);
+}
+
+#msg {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.9);
+    padding: 30px;
+    border-radius: 15px;
+}
+
+.hidden { display: none; }
+
+button {
+    background: #00d4ff;
+    border: none; padding: 10px 25px;
+    font-weight: bold; cursor: pointer;
+    border-radius: 5px;
+}
+
+    </style>
+    
+</body>
+</html>
